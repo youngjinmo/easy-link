@@ -43,6 +43,9 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.14.0'
     implementation 'com.google.guava:guava:33.0.0-jre'
 
+    // Redis connection pooling
+    implementation 'org.apache.commons:commons-pool2:2.11.1'
+
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
