@@ -1,6 +1,9 @@
 package com.shortenurl.util;
 
-import com.shortenurl.util.ClientMapper;
+import com.shortenurl.link_access_log.dto.GeoInfoDto;
+import com.shortenurl.link_access_log.dto.UserAgentDto;
+import com.shortenurl.stream.dto.AccessLinkLogDto;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,49 +18,46 @@ class ClientMapperTest {
     @Mock
     private MockHttpServletRequest request;
 
-    private ClientMapper clientMapper;
-
     @BeforeEach
     void setUp() {
         request = new MockHttpServletRequest();
-        clientMapper = new ClientMapper();
     }
 
     @Test
-    void getIpAddress() {
+    void parseClientIp() {
         // given
         String mockIpAddress = " 127.0.0.1";
         request.addHeader("X-Forwarded-For", mockIpAddress);
 
         // when
-        String parsedIpAddress = clientMapper.getIpAddress(request);
+        String parsedIpAddress = ClientMapper.parseClientIp(request);
 
         // then
         assertEquals(mockIpAddress, parsedIpAddress);
     }
 
     @Test
-    void getUserAgent_with_normal_user_agent() {
+    void parseRequestInfo() {
         // given
-        String mockUserAgent = "UglyFox";
-        request.addHeader("User-Agent", mockUserAgent);
+        String mockClientIp = "127.0.0.1";
+        String mockUAstring = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36";
+        String mockReferer = "http://www.google.com/";
+
+        request.addHeader("X-Forwarded-For", mockClientIp);
+        request.addHeader("Referer", mockReferer);
+        request.addHeader("User-Agent", mockUAstring);
+
+        AccessLinkLogDto expectedDto = AccessLinkLogDto.from(
+                mockClientIp,
+                mockReferer,
+                UserAgentDto.builder().clientDevice("Other").clientBrowser("Chrome").clientOs("Windows").build(),
+                GeoInfoDto.builder().build()
+        );
 
         // when
-        String parsedUserAgent = clientMapper.getUserAgent(request);
+        AccessLinkLogDto requestDto = ClientMapper.parseRequestInfo(request);
 
         // then
-        assertEquals(mockUserAgent, parsedUserAgent);
-    }
-
-    @Test
-    void getUserAgent_with_abnormal_user_agent() {
-        // given
-        request.addHeader("User-Agent", "");
-
-        // when
-        String parsedUserAgent = clientMapper.getUserAgent(request);
-
-        // then
-        assertEquals("unknown", parsedUserAgent);
+        assertTrue(requestDto.equals(expectedDto));
     }
 }

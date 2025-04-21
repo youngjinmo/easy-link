@@ -24,4 +24,3 @@ public class RandomUtilImpl implements RandomUtil {
         return String.valueOf(sb);
     }
 }
-

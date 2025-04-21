@@ -10,7 +10,7 @@ public interface CacheService {
     void deleteByKey(String key);
 
     // extended cache service
-    void setFreeLink(String clientIp, String userAgent);
+    void setFreeLink(String clientIp, Long linkId);
     boolean hasFreeLink(String clientIp);
     void setVerificationCode(String email, String code);
     boolean verifyEmailCode(String email, String code);

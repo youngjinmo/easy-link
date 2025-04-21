@@ -82,15 +82,16 @@ class CacheServiceTest {
     @Test
     void setFreeLink() {
         // given
+        long freeLinkId = 0L;
         String clientIp = "localhost";
-        String userAgent = "Mozilla";
         String cacheKey = FREE_LINK_KEY_PREFIX + clientIp + ":";
 
         // when
-        cacheService.setFreeLink(clientIp, userAgent);
+        cacheService.setFreeLink(clientIp, freeLinkId);
 
         // then
         assertNotNull(mockCacheStorage.get(cacheKey));
+        assertEquals(String.valueOf(freeLinkId), mockCacheStorage.get(cacheKey));
     }
 
     @Test

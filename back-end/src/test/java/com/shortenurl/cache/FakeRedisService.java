@@ -36,9 +36,9 @@ public class FakeRedisService implements CacheService {
         cacheStore.remove(key);
     }
 
-    public void setFreeLink(String clientIp, String userAgent) {
+    public void setFreeLink(String clientIp, Long linkId) {
         String key = generateFreeLinkKey(clientIp);
-        set(key, String.valueOf(userAgent), commonTTL);
+        set(key, String.valueOf(linkId), commonTTL);
     }
 
     public boolean hasFreeLink(String clientIp) {

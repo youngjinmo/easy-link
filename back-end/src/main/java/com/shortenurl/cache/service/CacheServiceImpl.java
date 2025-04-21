@@ -19,33 +19,33 @@ public class CacheServiceImpl implements CacheService {
     private final EncodeUtil encoderUtil;
 
     @Value("${app.session.duration}")
-    private final long loginSessionTTL;
+    private int loginSessionTTL;
 
     @Value("${app.free-link.duration}")
-    private final long freeLinkTTL;
+    private int freeLinkTTL;
 
     @Value("${app.email-verification.duration}")
-    private final long emailVerificationTTL;
+    private int emailVerificationTTL;
 
     // 로그인 하지않고 ip + user-agent 기반으로 무료 링크 생성한지 여부 key
     private String generateFreeLinkKey(String clientIp) {
-        return FREE_LINK_KEY_PREFIX + clientIp + ":";
+        return FREE_LINK_KEY_PREFIX + clientIp;
     }
 
     // 이메일 유효성 검증을 위한 인증코드 key
     private String generateEmailVerificationCodeKey(String email) {
-        return EMAIL_VERIFICATION_CODE_KEY_PREFIX + email + ":";
+        return EMAIL_VERIFICATION_CODE_KEY_PREFIX + email;
     }
 
     // 로그인 세션 key
     private String generateLoginSessionKey(String clientIp, String userAgent) {
-        return LOGIN_SESSION_KEY_PREFIX + encoderUtil.encode(clientIp + userAgent) + ":";
+        return LOGIN_SESSION_KEY_PREFIX + encoderUtil.encode(clientIp + userAgent);
     }
 
     // 로그인 하지않고 생성가능한 free link
-    public void setFreeLink(String clientIp, String userAgent) {
+    public void setFreeLink(String clientIp, Long linkId) {
         String key = generateFreeLinkKey(clientIp);
-        set(key, userAgent, freeLinkTTL);
+        set(key, String.valueOf(linkId), freeLinkTTL);
     }
 
     // free link 생성 여부
