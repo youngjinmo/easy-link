@@ -1,12 +1,13 @@
-package com.example.shortenurl.cache;
+package com.shortenurl.cache;
 
-import com.example.shortenurl.cache.dto.SessionValue;
-import com.example.shortenurl.cache.service.CacheService;
-import com.example.shortenurl.util.EncoderUtil;
+import com.shortenurl.cache.dto.SessionValue;
+import com.shortenurl.cache.service.CacheService;
+import com.shortenurl.util.EncoderUtil;
+import com.shortenurl.util.EncoderUtilImpl;
 
 import java.util.Map;
 
-import static com.example.shortenurl.cache.constant.CacheConstant.*;
+import static com.shortenurl.cache.constant.CacheConstant.*;
 
 public class FakeRedisService implements CacheService {
     private final Map<String, String> cacheStore;
@@ -15,7 +16,7 @@ public class FakeRedisService implements CacheService {
 
     public FakeRedisService(Map<String, String> mockRedisTemplate) {
         cacheStore = mockRedisTemplate;
-        encoderUtil = new EncoderUtil();
+        encoderUtil = new EncoderUtilImpl();
         commonTTL = 0L;
     }
 
@@ -79,3 +80,4 @@ public class FakeRedisService implements CacheService {
         return LOGIN_SESSION_KEY_PREFIX + encoderUtil.encode(clientIp + userAgent) + ":";
     }
 }
+

@@ -1,4 +1,4 @@
-package com.example.shortenurl.cache.dto;
+package com.shortenurl.cache.dto;
 
 import lombok.Builder;
 import lombok.Getter;

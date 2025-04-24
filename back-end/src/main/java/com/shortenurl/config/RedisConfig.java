@@ -1,4 +1,4 @@
-package com.example.shortenurl.config;
+package com.shortenurl.config;
 
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 

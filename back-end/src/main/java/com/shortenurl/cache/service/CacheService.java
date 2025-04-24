@@ -1,6 +1,6 @@
-package com.example.shortenurl.cache.service;
+package com.shortenurl.cache.service;
 
-import com.example.shortenurl.cache.dto.SessionValue;
+import com.shortenurl.cache.dto.SessionValue;
 
 public interface CacheService {
     // base cache service

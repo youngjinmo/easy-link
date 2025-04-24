@@ -1,4 +1,4 @@
-package com.example.shortenurl.util;
+package com.shortenurl.util;
 
 import jakarta.servlet.http.HttpServletRequest;
 

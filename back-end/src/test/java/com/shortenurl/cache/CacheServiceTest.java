@@ -1,15 +1,16 @@
-package com.example.shortenurl.cache;
+package com.shortenurl.cache;
 
-import com.example.shortenurl.cache.dto.SessionValue;
-import com.example.shortenurl.cache.service.CacheService;
-import com.example.shortenurl.util.EncoderUtil;
+import com.shortenurl.cache.dto.SessionValue;
+import com.shortenurl.cache.service.CacheService;
+import com.shortenurl.util.EncoderUtil;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.example.shortenurl.cache.constant.CacheConstant.*;
+import static com.shortenurl.cache.constant.CacheConstant.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CacheServiceTest {
@@ -176,3 +177,4 @@ class CacheServiceTest {
         assertEquals(String.valueOf(userId), mockCacheStorage.get(cacheKey));
     }
 }
+

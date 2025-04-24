@@ -1,7 +1,7 @@
-package com.example.shortenurl.cache.service;
+package com.shortenurl.cache.service;
 
-import com.example.shortenurl.cache.dto.SessionValue;
-import com.example.shortenurl.util.EncoderUtil;
+import com.shortenurl.cache.dto.SessionValue;
+import com.shortenurl.util.EncoderUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import static com.example.shortenurl.cache.constant.CacheConstant.*;
+import static com.shortenurl.cache.constant.CacheConstant.*;
 
 @Slf4j
 @Service
@@ -108,3 +108,4 @@ public class CacheServiceImpl implements CacheService {
         baseCacheService.deleteByKey(key);
     }
 }
+

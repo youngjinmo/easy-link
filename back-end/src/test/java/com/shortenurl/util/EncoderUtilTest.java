@@ -1,5 +1,6 @@
-package com.example.shortenurl.util;
+package com.shortenurl.util;
 
+import com.shortenurl.util.EncoderUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -1,4 +1,4 @@
-package com.example.shortenurl.cache.constant;
+package com.shortenurl.cache.constant;
 
 public final class CacheConstant {
     private CacheConstant() {}
