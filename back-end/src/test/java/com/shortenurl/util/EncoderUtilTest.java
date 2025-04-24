@@ -1,18 +1,17 @@
 package com.shortenurl.util;
 
-import com.shortenurl.util.EncoderUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class EncoderUtilTest {
+class EncoderUtilImplTest {
 
-    private EncoderUtil encoderUtil;
+    private EncoderUtilImpl encoderUtilImpl;
 
     @BeforeEach
     void setUp() {
-        encoderUtil = new EncoderUtil();
+        encoderUtilImpl = new EncoderUtilImpl();
     }
 
     @Test
@@ -21,22 +20,22 @@ class EncoderUtilTest {
         String original = "not-encoded-string";
 
         // when
-        String encoded = encoderUtil.encode(original);
+        String encoded = encoderUtilImpl.encode(original);
 
         // then
         assertNotEquals(original, encoded);
         assertTrue(encoded.length() > original.length());
-        assertEquals(encoderUtil.encode(original), encoded);
+        assertEquals(encoderUtilImpl.encode(original), encoded);
     }
 
     @Test
     void verify() {
         // given
         String original = "not-encoded-string";
-        String encoded = encoderUtil.encode(original);
+        String encoded = encoderUtilImpl.encode(original);
 
         // then
-        assertTrue(encoderUtil.verify(original, encoded));
-        assertFalse(encoderUtil.verify("original", encoded));
+        assertTrue(encoderUtilImpl.verify(original, encoded));
+        assertFalse(encoderUtilImpl.verify("original", encoded));
     }
 }

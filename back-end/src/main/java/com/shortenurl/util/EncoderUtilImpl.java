@@ -11,7 +11,7 @@ import java.security.NoSuchAlgorithmException;
 
 @Slf4j
 @Component
-public final class EncoderUtil {
+public final class EncoderUtilImpl implements EncodeUtil {
 
     private final String HASH_ALGORITHM = "SHA-256";
 
@@ -32,7 +32,7 @@ public final class EncoderUtil {
             return hexString.toString();
 
         } catch (NoSuchAlgorithmException e) {
-            log.error("hash algorithm is wrong: " + e.getMessage());
+            log.error("hash algorithm is wrong: {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -40,4 +40,4 @@ public final class EncoderUtil {
     public boolean verify(String targetString, String encodedString) {
         return encodedString.equals(encode(targetString));
     }
-} 
+}

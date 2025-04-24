@@ -1,7 +1,7 @@
 package com.shortenurl.cache.service;
 
 import com.shortenurl.cache.dto.SessionValue;
-import com.shortenurl.util.EncoderUtil;
+import com.shortenurl.util.EncodeUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,7 @@ import static com.shortenurl.cache.constant.CacheConstant.*;
 @RequiredArgsConstructor
 public class CacheServiceImpl implements CacheService {
     private final RedisService baseCacheService;
-    private final EncoderUtil encoderUtil;
+    private final EncodeUtil encoderUtil;
 
     @Value("${app.session.duration}")
     private final long loginSessionTTL;
@@ -108,4 +108,3 @@ public class CacheServiceImpl implements CacheService {
         baseCacheService.deleteByKey(key);
     }
 }
-

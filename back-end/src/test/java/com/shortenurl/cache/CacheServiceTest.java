@@ -2,7 +2,8 @@ package com.shortenurl.cache;
 
 import com.shortenurl.cache.dto.SessionValue;
 import com.shortenurl.cache.service.CacheService;
-import com.shortenurl.util.EncoderUtil;
+import com.shortenurl.util.EncodeUtil;
+import com.shortenurl.util.EncoderUtilImpl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -133,7 +134,7 @@ class CacheServiceTest {
     @Test
     void setLoginSession() {
         // given
-        EncoderUtil encoderUtil = new EncoderUtil();
+        EncodeUtil encoderUtil = new EncoderUtilImpl();
         Long userId = 1L;
         String clientIp = "localhost";
         String userAgent = "Mozilla";
@@ -156,7 +157,7 @@ class CacheServiceTest {
     @Test
     void verifyLoginSession() {
         // given
-        EncoderUtil encoderUtil = new EncoderUtil();
+        EncodeUtil encoderUtil = new EncoderUtilImpl();
         Long userId = 1L;
         String clientIp = "localhost";
         String userAgent = "Mozilla";
@@ -177,4 +178,3 @@ class CacheServiceTest {
         assertEquals(String.valueOf(userId), mockCacheStorage.get(cacheKey));
     }
 }
-
