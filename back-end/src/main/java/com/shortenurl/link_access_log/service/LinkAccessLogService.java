@@ -8,9 +8,9 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +33,7 @@ public class LinkAccessLogService {
     }
 
     private Map<String, String> convertRequestInfoToMap(AccessLinkLogDto requestInfo) {
-        Map<String, String> message = new HashMap<>();
+        Map<String, String> message = new ConcurrentHashMap<>();
         message.put("clientIp", requestInfo.getClientIp());
         message.put("clientDevice", requestInfo.getClientDevice());
         message.put("clientBrowser", requestInfo.getClientBrowser());
