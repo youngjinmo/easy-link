@@ -8,11 +8,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import org.hibernate.annotations.CreationTimestamp;
-
 import java.time.LocalDateTime;
 
-@Entity
+@Entity(name = "link_access_logs")
 @Getter
 @NoArgsConstructor
 public class LinkAccessLog {
@@ -38,13 +36,12 @@ public class LinkAccessLog {
 
     private String referer;
 
-    @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     public LinkAccessLog(
             Link link, String clientIp, String clientDevice, String clientBrowser, String clientOs,
-            String countryCode, String regionName, String referer
+            String countryCode, String regionName, String referer, LocalDateTime createdAt
     ) {
         this.link = link;
         this.clientIp = clientIp;
@@ -53,6 +50,8 @@ public class LinkAccessLog {
         this.clientOs = clientOs;
         this.countryCode = countryCode;
         this.regionName = regionName;
+        this.referer = referer;
+        this.createdAt = createdAt;
     }
 
     public LinkAccessLog(Link link, AccessLinkLogDto accessLinkLogDto) {
@@ -64,7 +63,7 @@ public class LinkAccessLog {
         this.countryCode = accessLinkLogDto.getCountryCode();
         this.regionName = accessLinkLogDto.getRegionName();
         this.referer = accessLinkLogDto.getReferer();
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = accessLinkLogDto.getCreatedAt();
     }
 } 
 

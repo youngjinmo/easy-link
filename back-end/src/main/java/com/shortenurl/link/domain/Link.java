@@ -12,7 +12,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
-@Entity
+@Entity(name = "links")
 @Getter @Setter
 @ToString(exclude = "user")
 @NoArgsConstructor
