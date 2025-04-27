@@ -1,8 +1,9 @@
 package com.shortenurl.config;
 
+import com.shortenurl.user.constant.UserProvider;
 import com.shortenurl.user.domain.User;
 import com.shortenurl.cache.service.CacheService;
-import com.shortenurl.user.service.UserService;
+import com.shortenurl.user.service.UserServiceImpl;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,7 +24,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final UserService userService;
+    private final UserServiceImpl userServiceImpl;
     private final CacheService cacheService;
 
     @Override
@@ -31,14 +32,19 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                                       Authentication authentication) throws IOException, ServletException {
         OAuth2AuthenticationToken token = (OAuth2AuthenticationToken) authentication;
         OAuth2User oAuth2User = token.getPrincipal();
-        String provider = token.getAuthorizedClientRegistrationId();
+        String oauthProviderName = token.getAuthorizedClientRegistrationId();
+        UserProvider userProvider = switch (token.getAuthorizedClientRegistrationId()) {
+            case "google" -> UserProvider.GOOGLE;
+            case "kakao" -> UserProvider.KAKAO;
+            default -> throw new IllegalArgumentException("Unsupported provider: " + oauthProviderName);
+        };
 
         Map<String, Object> attributes = oAuth2User.getAttributes();
-        String email = getEmail(attributes, provider);
-        String name = getName(attributes, provider);
-        String providerId = getProviderId(attributes, provider);
+        String email = getEmail(attributes, oauthProviderName);
+        String name = getName(attributes, oauthProviderName);
+        String providerId = getProviderId(attributes, oauthProviderName);
 
-        User user = userService.findOrCreateUser(email, name, provider, providerId);
+        User user = userServiceImpl.findOrCreateOAuthUser(email, name, userProvider, providerId);
 //        cacheService.set(request, user);
 
         getRedirectStrategy().sendRedirect(request, response, "http://localhost:8080");
