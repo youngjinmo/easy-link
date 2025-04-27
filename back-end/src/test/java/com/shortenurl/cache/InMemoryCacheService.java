@@ -9,15 +9,15 @@ import java.util.Map;
 
 import static com.shortenurl.cache.constant.CacheConstant.*;
 
-public class FakeRedisService implements CacheService {
+public class InMemoryCacheService implements CacheService {
     private final Map<String, String> cacheStore;
     private final EncodeUtil encoderUtil;
     private final Long commonTTL;
 
-    public FakeRedisService(Map<String, String> mockRedisTemplate) {
+    public InMemoryCacheService(Map<String, String> mockRedisTemplate) {
         cacheStore = mockRedisTemplate;
         encoderUtil = new EncoderUtilImpl();
-        commonTTL = 0L;
+        commonTTL = 10L;
     }
 
     public void set(String key, String value, long ttl) {

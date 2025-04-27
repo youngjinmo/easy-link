@@ -22,7 +22,7 @@ class CacheServiceTest {
     @BeforeEach
     void setUp() {
         mockCacheStorage = new HashMap<>();
-        cacheService = new FakeRedisService(mockCacheStorage);
+        cacheService = new InMemoryCacheService(mockCacheStorage);
     }
 
     @Test

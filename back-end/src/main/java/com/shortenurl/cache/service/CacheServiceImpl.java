@@ -83,9 +83,6 @@ public class CacheServiceImpl implements CacheService {
     /**
      * Cache에 해당하는 영역을 다른 서비스로 쉽게 교체하기 위함과
      * 동시에 다른 서비스에서는 CacheService만 의존하기 위함
-     *
-     * @param key
-     * @param value
      */
 
     public void set(String key, String value, long duration) {

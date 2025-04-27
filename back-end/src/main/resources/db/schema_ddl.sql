@@ -18,7 +18,6 @@ CREATE TABLE links (
     original_url VARCHAR(255) NOT NULL COMMENT '원 URL 주소',
     short_path VARCHAR(255) NOT NULL UNIQUE COMMENT '압축 URL Path',
     user_id BIGINT COMMENT '회원 ID',
-    max_hits INT COMMENT '최대 조회수 제약',
     current_hits INT DEFAULT 0 COMMENT '현재 조회수',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '링크 생성일',
     updated_at TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '링크 수정일',

@@ -1,6 +1,7 @@
 package com.shortenurl.link_access_log.service;
 
 import com.shortenurl.stream.service.StreamService;
+import org.springframework.data.redis.connection.stream.MapRecord;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,24 +14,21 @@ public class FakeStreamService implements StreamService {
         this.queue = queue;
     }
 
-    @Override
     public void produce(String key, Map<String, String> message) {
         List<Map<String, String>> queue = this.queue.computeIfAbsent(key, k -> new ArrayList<>());
         queue.add(message);
     }
 
-    @Override
     public List<Map<String, String>> consume(String key) {
         List<Map<String, String>> originalMessages = queue.getOrDefault(key, new ArrayList<>());
         List<Map<String, String>> messages = new ArrayList<>(originalMessages);
 
         // remove messages from queue
-        removeElements(key, messages);
+        remove(key, messages);
 
         return messages;
     }
 
-    @Override
     public List<Map<String, String>> consume(String key, int limit) {
         List<Map<String, String>> originalMessages = queue.getOrDefault(key, new ArrayList<>())
                 .stream()
@@ -39,12 +37,12 @@ public class FakeStreamService implements StreamService {
         List<Map<String, String>> messages = new ArrayList<>(originalMessages);
 
         // remove messages from queue
-        removeElements(key, messages);
+        remove(key, messages);
 
         return messages;
     }
 
-    private void removeElements(String key, List<Map<String, String>> messages) {
+    public void remove(String key, List<Map<String, String>> messages) {
         List<Map<String, String>> originalQueue = queue.getOrDefault(key, new ArrayList<>());
 
         // 안전한 방식: Iterator 사용

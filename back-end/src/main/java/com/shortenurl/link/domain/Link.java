@@ -35,12 +35,6 @@ public class Link {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(nullable = false)
-    private Integer currentHits = 0;
-
-    @Column(nullable = false)
-    private Integer maxHits = 0;
-
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -53,11 +47,10 @@ public class Link {
     private LocalDateTime deletedAt;
 
     // 로그인 없이 생성가능한 무료 링크
-    public Link(LinkState state, String originalUrl, String shortPath, int maxHits, int expires) {
+    public Link(LinkState state, String originalUrl, String shortPath, int expires) {
         this.state = state;
         this.originalUrl = originalUrl;
         this.shortPath = shortPath;
-        this.maxHits = maxHits;
         this.expiredAt = LocalDateTime.now().plusSeconds(expires);
         this.createdAt = LocalDateTime.now();
     }
