@@ -3,12 +3,12 @@ package com.shortenurl.stream.service;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.data.redis.connection.stream.MapRecord;
-import org.springframework.data.redis.connection.stream.RecordId;
 import org.springframework.data.redis.connection.stream.StreamOffset;
 import org.springframework.data.redis.core.StreamOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,40 +33,59 @@ public class RedisStreamService implements StreamService {
 
     @Override
     public List<Map<String, String>> consume(String key) {
-        // read records from redis streams
-        List<MapRecord<String, Object, Object>> records = redisOperations.read(StreamOffset.fromStart(key));
-
-        // remove records loaded
-        deleteRecords(key, records);
-
-        return records.stream().map(this::convertRecordToMap).collect(Collectors.toList());
+        try {
+            return redisOperations
+                    .read(StreamOffset.fromStart(key))
+                    .stream()
+                    .map(this::convertRecordToMap)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            log.error("failed to read records from redis streams, key={}", key);
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public List<Map<String, String>> consume(String key, int limit) {
-        // read records from redis streams
-        List<MapRecord<String, Object, Object>> records = redisOperations.read(StreamOffset.fromStart(key));
-
-        // remove records loaded
-        deleteRecords(key, records);
-
-        return records.stream().limit(limit).map(this::convertRecordToMap).collect(Collectors.toList());
-    }
-
-    private void deleteRecords(String streamKey, List<MapRecord<String, Object, Object>> records) {
         try {
-            // remove records loaded
-            if (records != null && !records.isEmpty()) {
-                redisOperations.delete(streamKey, records.stream()
-                        .map(record -> record.getId())
-                        .toArray(RecordId[]::new)
-                );
-                log.info("success to save records from redis streams, count={}", records.size());
-            }
+            return redisOperations
+                    .read(StreamOffset.fromStart(key))
+                    .stream()
+                    .limit(limit)
+                    .map(this::convertRecordToMap)
+                    .collect(Collectors.toList());
         } catch (Exception e) {
-            log.error("failed to delete records from redis streams");
+            log.error("failed to read records from redis streams, key={}", key);
+            throw new RuntimeException(e);
         }
     }
+
+    public void remove(String key, List<Map<String, String>> records) {
+        try {
+            Iterator<Map<String, String>> iterator = records.iterator();
+            while (iterator.hasNext()) {
+                Map<String, String> record = iterator.next();
+                redisOperations.delete(key, record.get("id"));
+            }
+        } catch (Exception e) {
+            log.info("failed to delete records from redis streams, key={}, count={}", key, records.size());
+        }
+    }
+
+//    public void remove(String streamKey, List<MapRecord<String, Object, Object>> records) {
+//        try {
+//            // remove records loaded
+//            if (records != null && !records.isEmpty()) {
+//                redisOperations.delete(streamKey, records.stream(
+//                        .map(record -> record.getId())
+//                        .toArray(RecordId[]::new)
+//                );
+//                log.info("success to save records from redis streams, count={}", records.size());
+//            }
+//        } catch (Exception e) {
+//            log.error("failed to delete records from redis streams");
+//        }
+//    }
 
     private Map<String, String> convertRecordToMap(MapRecord<String, Object, Object> record) {
         return record.getValue()
