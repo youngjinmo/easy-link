@@ -135,7 +135,7 @@ public class LinkServiceImpl implements LinkService {
     }
 
     @Transactional
-    public void updateLinkState(String shortPath, LinkState state) {
+    public void updateState(String shortPath, LinkState state) {
         Link link = getByPath(shortPath);
         LinkState previousState = link.getState();
         link.setState(state);
@@ -143,7 +143,7 @@ public class LinkServiceImpl implements LinkService {
     }
 
     @Transactional
-    public void updateLinkShortPath(String shortPath, String newShortPath) {
+    public void updateShortPath(String shortPath, String newShortPath) {
         Link link = getByPath(shortPath);
         link.setShortPath(newShortPath);
         log.info("Link {} short path updated to {}", shortPath, newShortPath);
@@ -153,8 +153,13 @@ public class LinkServiceImpl implements LinkService {
     public void deleteLink(String shortPath) {
         Link link = getByPath(shortPath);
         LinkState previousState = link.getState();
-        updateLinkState(shortPath, LinkState.DELETED);
+        updateState(shortPath, LinkState.DELETED);
         log.info("Link {} deleted from {}", shortPath, previousState);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean existsShortPath(String shortPath) {
+        return linkRepository.existsByShortPath(shortPath);
     }
 
     private String generateRandomPath(int length) {

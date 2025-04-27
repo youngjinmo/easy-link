@@ -3,7 +3,7 @@ package com.shortenurl.link.controller;
 import com.shortenurl.link.domain.Link;
 import com.shortenurl.link.dto.CreateLinkRequest;
 import com.shortenurl.link.dto.FreeLinkResponse;
-import com.shortenurl.link.service.LinkServiceImpl;
+import com.shortenurl.link.service.LinkService;
 import com.shortenurl.util.ClientMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/link")
 @RequiredArgsConstructor
 public class LinkController {
-    private final LinkServiceImpl linkService;
+    private final LinkService linkService;
 
     @PostMapping("/free")
     public ResponseEntity<FreeLinkResponse> createFreeLink(

@@ -1,7 +1,7 @@
 package com.shortenurl.link.controller;
 
 import com.shortenurl.link.domain.Link;
-import com.shortenurl.link.service.LinkServiceImpl;
+import com.shortenurl.link.service.LinkService;
 import com.shortenurl.link_access_log.service.LinkAccessLogService;
 import com.shortenurl.stream.dto.AccessLinkLogDto;
 import com.shortenurl.util.ClientMapper;
@@ -23,7 +23,7 @@ import java.net.URI;
 @RequestMapping("/i")
 @RequiredArgsConstructor
 public class RedirectLinkController {
-    private final LinkServiceImpl linkService;
+    private final LinkService linkService;
     private final LinkAccessLogService linkAccessLogService;
 
     @GetMapping("/{shortPath}")
