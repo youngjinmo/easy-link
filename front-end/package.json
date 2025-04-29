@@ -1,31 +1,26 @@
 {
-  "name": "shorten-url-frontend",
-  "version": "0.1.0",
-  "private": true,
+  "name": "shorten-url-front-end",
+  "version": "0.0.1",
+  "type": "module",
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "axios": "^1.6.7",
-    "core-js": "^3.36.0",
-    "vue": "^3.4.19",
-    "vue-router": "^4.3.0",
-    "vuex": "^4.1.0",
-    "element-plus": "^2.5.6"
+    "axios": "^1.6.2",
+    "pinia": "^2.1.7",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "~5.0.8",
-    "@vue/cli-plugin-eslint": "~5.0.8",
-    "@vue/cli-plugin-router": "~5.0.8",
-    "@vue/cli-plugin-vuex": "~5.0.8",
-    "@vue/cli-service": "~5.0.8",
-    "@vue/compiler-sfc": "^3.4.19",
-    "@babel/eslint-parser": "^7.23.10",
-    "eslint": "^8.57.0",
-    "eslint-plugin-vue": "^9.21.1",
-    "sass": "^1.71.1",
-    "sass-loader": "^14.1.1"
+    "@types/node": "^20.10.0",
+    "@vitejs/plugin-vue": "^5.2.3",
+    "@vue/compiler-sfc": "^3.5.13",
+    "sass": "^1.69.5",
+    "typescript": "^5.3.3",
+    "vite": "^6.2.4",
+    "vite-plugin-vue-devtools": "^7.7.2",
+    "vue-tsc": "^1.8.24"
   }
-} 
+}
