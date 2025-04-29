@@ -25,7 +25,7 @@ public class LinkAccessLogService {
             Map<String, String> message = convertRequestInfoToMap(requestInfo);
             streamService.produce(key, message);
         } catch (Exception e) {
-            log.error("failed to save access log to redis streams, linkId={}, requestInfo={}", linkId, requestInfo);
+            log.error("failed to save access log to redis streams, linkId={}, requestInfo={}", linkId, requestInfo.toString());
         }
     }
 

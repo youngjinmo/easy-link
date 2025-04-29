@@ -4,11 +4,20 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.4'
 }
 
+bootJar {
+    enabled = false
+    mainClass = 'com.shortenurl.ShortenUrlApplication'
+}
+
+jar {
+    enabled = true
+}
+
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    sourceCompatibility = '22'
+    sourceCompatibility = '17'
 }
 
 configurations {

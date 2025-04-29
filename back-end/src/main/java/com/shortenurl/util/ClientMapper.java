@@ -53,10 +53,10 @@ public class ClientMapper {
 
     private static String parseReferer(HttpServletRequest request) {
         String referer = request.getHeader("Referer");
-        if (referer != null && !referer.isEmpty()) {
-            referer = referer.contains("://") ? referer : "http://" + referer;
+        if (referer == null || referer.isEmpty()) {
+            return UNKNOWN;
         }
-        return referer;
+        return referer = referer.contains("://") ? referer : "http://" + referer;
     }
 
     private static UserAgentDto parseUserAgent(HttpServletRequest request) {
@@ -81,8 +81,8 @@ public class ClientMapper {
     private static GeoInfoDto parseGeoInfo(String clientIp) {
         try {
             // TODO make it by use external library or api
-            String countryCode = null;
-            String regionName = null;
+            String countryCode = UNKNOWN;
+            String regionName = UNKNOWN;
 
             return GeoInfoDto.builder()
                     .countryCode(countryCode)

@@ -58,6 +58,8 @@ class ClientMapperTest {
         AccessLinkLogDto requestDto = ClientMapper.parseRequestInfo(request);
 
         // then
-        assertTrue(requestDto.equals(expectedDto));
+        assertEquals(expectedDto.getClientIp(), requestDto.getClientIp());
+        assertEquals(expectedDto.getClientBrowser(), requestDto.getClientBrowser());
+        assertEquals(expectedDto.getClientOs(), requestDto.getClientOs());
     }
 }

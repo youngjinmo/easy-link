@@ -5,10 +5,11 @@ import com.shortenurl.link_access_log.dto.UserAgentDto;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
-@Getter
+@Getter @ToString
 @EqualsAndHashCode
 public class AccessLinkLogDto {
     private String clientIp;

@@ -28,16 +28,20 @@ public class RedirectLinkController {
 
     @GetMapping("/{shortPath}")
     public ResponseEntity<Void> redirect(@PathVariable String shortPath, HttpServletRequest request) {
-        // link 조회
         Link link = linkService.findValidateLinkByPath(shortPath);
 
-        // access log 적재 -> cache storage
-        AccessLinkLogDto requestInfo = ClientMapper.parseRequestInfo(request);
-        linkAccessLogService.putRequestInfo(link.getId(), requestInfo);
+        if (link != null) {
+            // access log 적재 -> cache storage
+            AccessLinkLogDto requestInfo = ClientMapper.parseRequestInfo(request);
+            linkAccessLogService.putRequestInfo(link.getId(), requestInfo);
 
-        return ResponseEntity
-                .status(HttpStatus.FOUND)
-                .location(URI.create(link.getOriginalUrl()))
+            return ResponseEntity
+                    .status(HttpStatus.FOUND)
+                    .location(URI.create(link.getOriginalUrl()))
+                    .build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .location(URI.create("/"))
                 .build();
     }
 }
