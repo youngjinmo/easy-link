@@ -27,7 +27,7 @@
       </template>
       
       <button type="submit" class="submit-button" :disabled="!isValid && customPath.length > 0">
-        짧은 URL 만들기
+        URL 단축하기
       </button>
     </form>
     
@@ -41,17 +41,25 @@
       :message="modalMessage" 
       @close="showModal = false" 
     />
+    
+    <ErrorModal
+      :show="showErrorModal"
+      :message="errorMessage"
+      @close="closeErrorModal"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import ModalComponent from '../components/ModalComponent.vue';
+import ErrorModal from '@/components/ErrorModal.vue';
 import { OAUTH_ENDPOINTS, API_URL, BASE_PROTOCOL, BASE_URL, BASE_PORT } from '@/config';
 
 const router = useRouter();
+const route = useRoute();
 const originalUrl = ref('');
 const customPath = ref('');
 const shortUrl = ref('');
@@ -59,6 +67,26 @@ const isValid = ref(true);
 const showModal = ref(false);
 const modalMessage = ref('');
 const isLoggedIn = ref(false);
+const showErrorModal = ref(false);
+const errorMessage = ref('');
+
+// URL 파라미터에서 에러 처리
+const handleUrlError = () => {
+  const errorCode = route.query.errorCode as string;
+  const errorMsg = route.query.message as string;
+
+  if (errorCode && errorMsg) {
+    showError(errorMsg);
+    // 에러 메시지를 표시한 후 URL에서 에러 파라미터 제거
+    router.replace({ query: {} });
+  }
+};
+
+// 컴포넌트 마운트 시 에러 처리
+onMounted(() => {
+  checkLoginStatus();
+  handleUrlError();
+});
 
 // Check if user is logged in when component is mounted
 // This would normally come from a user store or auth service
@@ -68,25 +96,45 @@ const checkLoginStatus = () => {
   isLoggedIn.value = !!token;
 };
 
-// Call this when component is mounted
-checkLoginStatus();
-
 const submitUrl = async () => {
+  if (!originalUrl.value) {
+    showError('URL을 입력해주세요.');
+    return;
+  }
+
   try {
     const response = await axios.post(`${API_URL}/link/free`, {
       originalUrl: originalUrl.value,
       shortPath: customPath.value || undefined
     });
     
-    shortUrl.value = `${BASE_PROTOCOL}${BASE_URL}:${BASE_PORT}/${response.data.shortUrlPath}`;
+    shortUrl.value = `${BASE_PROTOCOL}${BASE_URL}:${BASE_PORT}/${response.data.shortPath}`;
     
     if (!isLoggedIn.value) {
       showModal.value = true;
-      modalMessage.value = 'Login to create custom URL paths!';
+      modalMessage.value = '로그인하면 커스텀 URL 경로를 사용할 수 있습니다!';
     }
   } catch (error) {
-    console.error('Error shortening URL:', error);
-    alert('Failed to shorten URL. Please try again.');
+    if (axios.isAxiosError(error)) {
+      const status = error.response?.status;
+      const message = error.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
+      
+      switch (status) {
+        case 400:
+          showError('잘못된 URL 형식입니다.');
+          break;
+        case 403:
+          showError('접근이 거부되었습니다.');
+          break;
+        case 404:
+          showError('요청한 리소스를 찾을 수 없습니다.');
+          break;
+        default:
+          showError(message);
+      }
+    } else {
+      showError('알 수 없는 오류가 발생했습니다.');
+    }
   }
 };
 
@@ -111,6 +159,30 @@ const loginWithKakao = () => {
 
 const loginWithGoogle = () => {
   window.location.href = OAUTH_ENDPOINTS.GOOGLE;
+};
+
+const showError = (message: string) => {
+  errorMessage.value = convertErrorMessage(message);
+  showErrorModal.value = true;
+};
+
+const convertErrorMessage = (message: string) => {
+  switch (message) {
+    case 'Link expired':
+      return '만료된 링크입니다.';
+    case 'Exceeded the limit':
+      return '최대 단축 URL 갯수를 초과하였습니다.';
+    case 'Link not found':
+      return '요청한 리소스를 찾을 수 없습니다.';
+    case 'Invalid URL':
+      return '잘못된 URL 형식입니다.';
+    default:
+      return '알 수 없는 오류가 발생했습니다.';
+  }
+};
+
+const closeErrorModal = () => {
+  showErrorModal.value = false;
 };
 </script>
 
