@@ -2,10 +2,8 @@ package com.shortenurl.config;
 
 import com.shortenurl.user.constant.UserProvider;
 import com.shortenurl.user.domain.User;
-import com.shortenurl.cache.service.CacheService;
 import com.shortenurl.user.service.UserServiceImpl;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -25,27 +23,22 @@ import java.util.Map;
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final UserServiceImpl userServiceImpl;
-    private final CacheService cacheService;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                      Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         OAuth2AuthenticationToken token = (OAuth2AuthenticationToken) authentication;
         OAuth2User oAuth2User = token.getPrincipal();
         String oauthProviderName = token.getAuthorizedClientRegistrationId();
-        UserProvider userProvider = switch (token.getAuthorizedClientRegistrationId()) {
-            case "google" -> UserProvider.GOOGLE;
-            case "kakao" -> UserProvider.KAKAO;
-            default -> throw new IllegalArgumentException("Unsupported provider: " + oauthProviderName);
+        UserProvider userProvider = switch (oauthProviderName.toUpperCase()) {
+            case "GOOGLE" -> UserProvider.GOOGLE;
+            case "KAKAO" -> UserProvider.KAKAO;
+            default -> throw new IllegalArgumentException("Unsupported provider: " + token.getAuthorizedClientRegistrationId());
         };
 
         Map<String, Object> attributes = oAuth2User.getAttributes();
-        String email = getEmail(attributes, oauthProviderName);
-        String name = getName(attributes, oauthProviderName);
-        String providerId = getProviderId(attributes, oauthProviderName);
+        String providerId = getProviderId(attributes, userProvider);
 
-        User user = userServiceImpl.findOrCreateOAuthUser(email, name, userProvider, providerId);
-//        cacheService.set(request, user);
+        User user = userServiceImpl.findOrCreateOAuthUser(userProvider, providerId, oAuth2User.getAttribute("code"));
 
         getRedirectStrategy().sendRedirect(request, response, "http://localhost:8080");
     }
@@ -70,13 +63,15 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         throw new IllegalArgumentException("Unsupported provider: " + provider);
     }
 
-    private String getProviderId(Map<String, Object> attributes, String provider) {
-        if ("google".equals(provider)) {
-            return (String) attributes.get("sub");
-        } else if ("kakao".equals(provider)) {
-            return String.valueOf(attributes.get("id"));
+    private String getProviderId(Map<String, Object> attributes, UserProvider provider) {
+        switch (provider) {
+            case GOOGLE -> {
+                return String.valueOf(attributes.get("sub"));
+            }
+            case KAKAO -> {
+                return String.valueOf(attributes.get("id"));
+            }
         }
         throw new IllegalArgumentException("Unsupported provider: " + provider);
     }
 }
-

@@ -27,21 +27,6 @@ public class CacheServiceImpl implements CacheService {
     @Value("${app.email-verification.duration}")
     private int emailVerificationTTL;
 
-    // 로그인 하지않고 ip + user-agent 기반으로 무료 링크 생성한지 여부 key
-    private String generateFreeLinkKey(String clientIp) {
-        return FREE_LINK_KEY_PREFIX + clientIp;
-    }
-
-    // 이메일 유효성 검증을 위한 인증코드 key
-    private String generateEmailVerificationCodeKey(String email) {
-        return EMAIL_VERIFICATION_CODE_KEY_PREFIX + email;
-    }
-
-    // 로그인 세션 key
-    private String generateLoginSessionKey(String clientIp, String userAgent) {
-        return LOGIN_SESSION_KEY_PREFIX + encoderUtil.encode(clientIp + userAgent);
-    }
-
     // 로그인 하지않고 생성가능한 free link
     public void setFreeLink(String clientIp, Long linkId) {
         String key = generateFreeLinkKey(clientIp);
@@ -68,16 +53,36 @@ public class CacheServiceImpl implements CacheService {
     }
 
     // 인증 세션 추가
-    public void setLoginSession(SessionValue sessionValue) {
-        String key = generateLoginSessionKey(sessionValue.getClientIp(), sessionValue.getUserAgent());
+    public void setLoginSession(SessionValue sessionValue, String token) {
+        String key = generateLoginSessionKey(token);
         String value = String.valueOf(sessionValue.getUserId());
         set(key, value, loginSessionTTL);
     }
 
     // ip, useragent 정보로 생성된 로그인 세션이 있는지 여부
-    public boolean verifyLoginSession(String clientIp, String userAgent) {
-        String key = generateLoginSessionKey(clientIp, userAgent);
+    public boolean verifyLoginSession(String token) {
+        String key = generateLoginSessionKey(token);
         return getByKey(key) != null;
+    }
+
+    public void removeLoginSession(String token) {
+        String key = generateLoginSessionKey(token);
+        deleteByKey(key);
+    }
+
+    // 로그인 하지않고 ip + user-agent 기반으로 무료 링크 생성한지 여부 key
+    private String generateFreeLinkKey(String clientIp) {
+        return FREE_LINK_KEY_PREFIX + clientIp;
+    }
+
+    // 이메일 유효성 검증을 위한 인증코드 key
+    private String generateEmailVerificationCodeKey(String email) {
+        return EMAIL_VERIFICATION_CODE_KEY_PREFIX + email;
+    }
+
+    // 로그인 세션 key
+    private String generateLoginSessionKey(String token) {
+        return LOGIN_SESSION_KEY_PREFIX + token;
     }
 
     /**

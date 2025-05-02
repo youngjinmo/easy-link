@@ -38,27 +38,28 @@ public class User {
     @Column(nullable = false)
     private UserProvider provider;
 
-    @Column(nullable = false)
     private String providerId;
+
+    private LocalDateTime lastLoginAt;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
     // Email user
-    public User(String username, String name, UserProvider provider) {
+    public User(String username, UserState state, String name) {
         this.username = username;
         this.name = name;
-        this.provider = provider;
+        this.provider = UserProvider.EMAIL;
     }
 
     // Oauth user
-    public User(String username, String name, UserProvider provider, String providerId) {
+    public User(String username, UserState state, String name, UserProvider provider, String providerId) {
         this.username = username;
+        this.state = state;
         this.name = name;
         this.provider = provider;
         this.providerId = providerId;

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import Home from '@/views/Home.vue'
+import KakaoLogin from '@/components/KakaoLogin.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -8,6 +9,14 @@ const routes: Array<RouteRecordRaw> = [
     component: Home,
     meta: {
       title: 'URL 단축 서비스'
+    }
+  },
+  {
+    path: '/login/oauth/kakao',
+    name: 'KakaoLogin',
+    component: () => KakaoLogin,
+    meta: {
+      title: '카카오 로그인'
     }
   },
   {
@@ -29,4 +38,4 @@ router.beforeEach((to, from, next) => {
   next()
 })
 
-export default router
+export default router 

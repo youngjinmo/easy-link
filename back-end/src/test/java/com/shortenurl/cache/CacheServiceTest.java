@@ -2,8 +2,6 @@ package com.shortenurl.cache;
 
 import com.shortenurl.cache.dto.SessionValue;
 import com.shortenurl.cache.service.CacheService;
-import com.shortenurl.util.EncodeUtil;
-import com.shortenurl.util.EncoderUtilImpl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -135,47 +133,48 @@ class CacheServiceTest {
     @Test
     void setLoginSession() {
         // given
-        EncodeUtil encoderUtil = new EncoderUtilImpl();
         Long userId = 1L;
-        String clientIp = "localhost";
-        String userAgent = "Mozilla";
         SessionValue session = SessionValue.builder()
                 .userId(userId)
-                .clientIp(clientIp)
-                .userAgent(userAgent)
                 .build();
+        String token = "test-token";
 
         // when
-        cacheService.setLoginSession(session);
+        cacheService.setLoginSession(session, token);
 
         // then
-        String cacheKey = LOGIN_SESSION_KEY_PREFIX
-                + encoderUtil.encode(clientIp + userAgent)
-                + ":";
+        String cacheKey = LOGIN_SESSION_KEY_PREFIX + token;
         assertEquals(String.valueOf(userId), mockCacheStorage.get(cacheKey));
     }
 
     @Test
     void verifyLoginSession() {
         // given
-        EncodeUtil encoderUtil = new EncoderUtilImpl();
         Long userId = 1L;
-        String clientIp = "localhost";
-        String userAgent = "Mozilla";
-        SessionValue session = SessionValue.builder()
-                .userId(userId)
-                .clientIp(clientIp)
-                .userAgent(userAgent)
-                .build();
-        String cacheKey = LOGIN_SESSION_KEY_PREFIX
-                + encoderUtil.encode(clientIp + userAgent)
-                + ":";
+        String token = "test-token";
+        String cacheKey = LOGIN_SESSION_KEY_PREFIX + token;
         mockCacheStorage.put(cacheKey, String.valueOf(userId));
 
         // when
-        cacheService.verifyLoginSession(clientIp, userAgent);
+        boolean exists = cacheService.verifyLoginSession(token);
 
         // then
-        assertEquals(String.valueOf(userId), mockCacheStorage.get(cacheKey));
+        assertTrue(exists);
+    }
+
+    @Test
+    void removeLoginSession() {
+        // given
+        Long userId = 1L;
+        String token = "test-token";
+        String cacheKey = LOGIN_SESSION_KEY_PREFIX + token;
+        mockCacheStorage.put(cacheKey, String.valueOf(userId));
+
+        // when
+        cacheService.removeLoginSession(token);
+
+        // then
+        assertNull(mockCacheStorage.get(cacheKey));
+        assertFalse(cacheService.verifyLoginSession(token));
     }
 }

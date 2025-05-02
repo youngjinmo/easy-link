@@ -8,5 +8,5 @@ import lombok.Getter;
 public class SessionValue {
     private Long userId;
     private String clientIp;
-    private String userAgent;
+    private String clientDevice;
 }

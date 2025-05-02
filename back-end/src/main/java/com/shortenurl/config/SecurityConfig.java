@@ -27,14 +27,17 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
-//            .authorizeHttpRequests(auth -> auth
-//                .requestMatchers("/api/auth/**", "/api/links/shorten", "/{shortPath}").permitAll()
-//                .anyRequest().authenticated()
-//            )
-//            .oauth2Login(oauth2 -> oauth2
-//                .successHandler(oAuth2AuthenticationSuccessHandler)
-//            );
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                        "/api/login/oauth/kakao",
+                        "/api/link/free",
+                        "/i/{shortPath}"
+                ).permitAll()
+                .anyRequest().authenticated()
+            )
+            .oauth2Login(oauth2 -> oauth2
+                .successHandler(oAuth2AuthenticationSuccessHandler)
+            );
 
         return http.build();
     }
