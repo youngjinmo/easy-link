@@ -1,9 +1,9 @@
 <template>
   <div class="home-container">
-    <div class="logo">ShortenURL</div>
+    <div class="logo">Easy Link</div>
     
-    <div v-if="shortUrl" class="shortened-url">
-      {{ shortUrl }}
+    <div v-if="shortenUrl" class="shorten-url">
+      {{ shortenUrl }}
     </div>
     
     <form @submit.prevent="submitUrl" class="url-form">
@@ -31,9 +31,8 @@
       </button>
     </form>
     
-    <div class="auth-buttons">
-      <button @click="loginWithKakao" class="auth-button kakao">카카오 로그인</button>
-      <button @click="loginWithGoogle" class="auth-button google">구글 로그인</button>
+    <div class="oauth-buttons">
+      <KakaoLogin />
     </div>
     
     <modal-component 
@@ -51,18 +50,19 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue';
-import axios from 'axios';
+import { ref, onMounted } from 'vue';
+import axios from '@/utils/axios-interceptor';
 import { useRouter, useRoute } from 'vue-router';
-import ModalComponent from '../components/ModalComponent.vue';
+import ModalComponent from '@/components/ModalComponent.vue';
 import ErrorModal from '@/components/ErrorModal.vue';
-import { OAUTH_ENDPOINTS, API_URL, BASE_PROTOCOL, BASE_URL, BASE_PORT } from '@/config';
+import KakaoLogin from '@/components/KakaoLogin.vue';
+import { API_URL, BASE_PROTOCOL, BASE_URL, BASE_PORT } from '@/config';
 
 const router = useRouter();
 const route = useRoute();
 const originalUrl = ref('');
 const customPath = ref('');
-const shortUrl = ref('');
+const shortenUrl = ref('');
 const isValid = ref(true);
 const showModal = ref(false);
 const modalMessage = ref('');
@@ -106,9 +106,12 @@ const submitUrl = async () => {
     const response = await axios.post(`${API_URL}/link/free`, {
       originalUrl: originalUrl.value,
       shortPath: customPath.value || undefined
+    })
+    .catch((error) => {
+      console.error('Error shortening URL:', error);
     });
     
-    shortUrl.value = `${BASE_PROTOCOL}${BASE_URL}:${BASE_PORT}/${response.data.shortPath}`;
+    shortenUrl.value = `${BASE_PROTOCOL}${BASE_URL}:${BASE_PORT}/i/${response?.data.shortPath}`;
     
     if (!isLoggedIn.value) {
       showModal.value = true;
@@ -151,14 +154,6 @@ const checkPathAvailability = async () => {
     console.error('Error checking path availability:', error);
     isValid.value = false;
   }
-};
-
-const loginWithKakao = () => {
-  window.location.href = OAUTH_ENDPOINTS.KAKAO;
-};
-
-const loginWithGoogle = () => {
-  window.location.href = OAUTH_ENDPOINTS.GOOGLE;
 };
 
 const showError = (message: string) => {
@@ -209,12 +204,16 @@ const closeErrorModal = () => {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  margin-bottom: 2rem;
+  gap: 10px;
+}
+
+.url-input, .custom-path-input, .submit-button, .oauth-buttons {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
 }
 
 .url-input, .custom-path-input {
-  width: 100%;
   padding: 12px 15px;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -238,26 +237,17 @@ const closeErrorModal = () => {
 }
 
 .submit-button {
-  padding: 12px 20px;
-  background-color: #4a90e2;
+  height: 45px;
+  background-color: #007bff;
   color: white;
   border: none;
   border-radius: 4px;
-  font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #3a7bc8;
-  }
-  
-  &:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-  }
+  font-size: 15px;
+  font-weight: 500;
 }
 
-.shortened-url {
+.shorten-url {
   margin-bottom: 1.5rem;
   padding: 10px 15px;
   background-color: #f0f8ff;
@@ -268,28 +258,11 @@ const closeErrorModal = () => {
   text-align: center;
 }
 
-.auth-buttons {
-  margin-top: 2rem;
+.oauth-buttons {
   display: flex;
-  gap: 10px;
-}
-
-.auth-button {
-  padding: 8px 15px;
-  border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-  
-  &.kakao {
-    background-color: #FEE500;
-    color: #000000;
-  }
-  
-  &.google {
-    background-color: #4285F4;
-    color: white;
-  }
+  justify-content: center;
+  width: 100%;
+  margin-top: 10px;
 }
 
 @media (max-width: 768px) {
@@ -297,9 +270,14 @@ const closeErrorModal = () => {
     font-size: 2rem;
   }
   
-  .auth-buttons {
-    flex-direction: column;
+  .oauth-buttons {
+    // flex-direction: column;
     width: 100%;
+  }
+  
+  .submit-button {
+    height: 40px;
+    font-size: 16px;
   }
 }
 </style> 

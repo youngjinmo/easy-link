@@ -27,14 +27,18 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
-//            .authorizeHttpRequests(auth -> auth
-//                .requestMatchers("/api/auth/**", "/api/links/shorten", "/{shortPath}").permitAll()
-//                .anyRequest().authenticated()
-//            )
-//            .oauth2Login(oauth2 -> oauth2
-//                .successHandler(oAuth2AuthenticationSuccessHandler)
-//            );
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                    "/api/login/oauth/kakao",
+                    "/api/oauth/kakao/callback",
+                    "/api/link/free",
+                    "/i/{shortPath}"
+                ).permitAll()
+                .anyRequest().authenticated()
+            )
+            .oauth2Login(oauth2 -> oauth2
+                .successHandler(oAuth2AuthenticationSuccessHandler)
+            );
 
         return http.build();
     }
@@ -46,7 +50,7 @@ public class SecurityConfig {
         config.addAllowedMethod("*");
         config.addAllowedHeader("*");
         config.setAllowCredentials(true);
-        config.setMaxAge(3600L); // for an hour
+        config.setMaxAge(3600L); // 1 hour
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

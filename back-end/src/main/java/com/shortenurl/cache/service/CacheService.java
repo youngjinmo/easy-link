@@ -14,6 +14,7 @@ public interface CacheService {
     boolean hasFreeLink(String clientIp);
     void setVerificationCode(String email, String code);
     boolean verifyEmailCode(String email, String code);
-    void setLoginSession(SessionValue sessionValue);
-    boolean verifyLoginSession(String ClientIp, String userAgent);
+    void setLoginSession(SessionValue sessionValue, String token);
+    boolean verifyLoginSession(String token);
+    void removeLoginSession(String token);
 }

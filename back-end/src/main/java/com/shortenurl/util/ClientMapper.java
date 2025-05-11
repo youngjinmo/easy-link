@@ -51,6 +51,12 @@ public class ClientMapper {
         return clientIp;
     }
 
+    public static String parseClientDevice(HttpServletRequest request) {
+        String userAgent = request.getHeader("User-Agent");
+        Client client = uaParser.parse(userAgent);
+        return client.device.family;
+    }
+
     private static String parseReferer(HttpServletRequest request) {
         String referer = request.getHeader("Referer");
         if (referer == null || referer.isEmpty()) {

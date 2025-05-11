@@ -57,15 +57,20 @@ public class InMemoryCacheService implements CacheService {
         return storedCode != null && storedCode.equals(code);
     }
 
-    public void setLoginSession(SessionValue sessionValue) {
-        String key = generateLoginSessionKey(sessionValue.getClientIp(), sessionValue.getUserAgent());
+    public void setLoginSession(SessionValue sessionValue, String token) {
+        String key = generateLoginSessionKey(token);
         String value = String.valueOf(sessionValue.getUserId());
         set(key, value, commonTTL);
     }
 
-    public boolean verifyLoginSession(String clientIp, String userAgent) {
-        String key = generateLoginSessionKey(clientIp, userAgent);
+    public boolean verifyLoginSession(String token) {
+        String key = generateLoginSessionKey(token);
         return getByKey(key) != null;
+    }
+
+    public void removeLoginSession(String token) {
+        String key = generateLoginSessionKey(token);
+        deleteByKey(key);
     }
 
     private String generateFreeLinkKey(String clientIp) {
@@ -76,7 +81,7 @@ public class InMemoryCacheService implements CacheService {
         return EMAIL_VERIFICATION_CODE_KEY_PREFIX + email + ":";
     }
 
-    private String generateLoginSessionKey(String clientIp, String userAgent) {
-        return LOGIN_SESSION_KEY_PREFIX + encoderUtil.encode(clientIp + userAgent) + ":";
+    private String generateLoginSessionKey(String token) {
+        return LOGIN_SESSION_KEY_PREFIX + token;
     }
 }
