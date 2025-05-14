@@ -1,40 +1,41 @@
 package com.shortenurl.util;
 
+import com.shortenurl.exception.BadRequestException;
+
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
 @Slf4j
 @Component
 public final class EncoderUtilImpl implements EncodeUtil {
-
-    private final String HASH_ALGORITHM = "SHA-256";
-
     public String encode(String value) {
-        if (value.isBlank()) {
-            throw new IllegalArgumentException("At least one value must be provided");
+        if (value == null || value.isBlank()) {
+            throw new BadRequestException("At least one value must be provided");
         }
 
-        try {
-            MessageDigest messageDigest = MessageDigest.getInstance(HASH_ALGORITHM);
-            byte[] hashed = messageDigest.digest(value.getBytes(StandardCharsets.UTF_8));
+        return Base64.getEncoder().encodeToString(value.getBytes(StandardCharsets.UTF_8));
+    }
 
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hashed) {
-                String hex = String.format("%02x", 0xff & b);
-                hexString.append(hex);
-            }
-            return hexString.toString();
-
-        } catch (NoSuchAlgorithmException e) {
-            log.error("hash algorithm is wrong: {}", e.getMessage());
-            throw new RuntimeException(e);
+    public String encode(String value, String salt) {
+        if (value == null || value.isBlank()) {
+            throw new BadRequestException("At least one value must be provided");
         }
+
+        return Base64.getEncoder().encodeToString((salt + value).getBytes(StandardCharsets.UTF_8));
+    }
+
+    public String decode(String encoded) {
+        if (encoded == null || encoded.isBlank()) {
+            throw new BadRequestException("At least one value must be provided");
+        }
+
+        byte[] decodedBytes = Base64.getDecoder().decode(encoded);
+        return new String(decodedBytes, StandardCharsets.UTF_8);
     }
 
     public boolean verify(String targetString, String encodedString) {

@@ -29,6 +29,20 @@ class EncoderUtilImplTest {
     }
 
     @Test
+    void decode() {
+        // given
+        String original = "not-encoded-string";
+        String encoded = encoderUtilImpl.encode(original);
+
+        // when
+        String decoded = encoderUtilImpl.decode(encoded);
+
+        // then
+        assertEquals(original, decoded);
+        assertNotEquals(encoded, decoded);
+    }
+
+    @Test
     void verify() {
         // given
         String original = "not-encoded-string";
