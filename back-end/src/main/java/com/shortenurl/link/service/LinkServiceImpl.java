@@ -6,7 +6,7 @@ import com.shortenurl.link.constant.LinkState;
 import com.shortenurl.user.domain.User;
 import com.shortenurl.link.domain.Link;
 import com.shortenurl.link.repository.LinkRepository;
-import com.shortenurl.util.RandomUtilImpl;
+import com.shortenurl.util.RandomUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ public class LinkServiceImpl implements LinkService {
 
     private final LinkRepository linkRepository;
     private final CacheService cacheService;
-    private final RandomUtilImpl randomUtilImpl;
+    private final RandomUtil randomUtilImpl;
 
     @Value("${app.free-link.duration}")
     private int freeLinkExpires;

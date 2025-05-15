@@ -30,6 +30,7 @@ public class RedirectLinkController {
     private String vueServer;
     private final LinkService linkService;
     private final LinkAccessLogService linkAccessLogService;
+    private final ClientMapper clientMapper;
 
     @GetMapping("/{shortPath}")
     public ResponseEntity<Void> redirect(@PathVariable String shortPath, HttpServletRequest request) {
@@ -37,7 +38,7 @@ public class RedirectLinkController {
 
         if (link != null) {
             // access log 적재 -> cache storage
-            AccessLinkLogDto requestInfo = ClientMapper.parseRequestInfo(request);
+            AccessLinkLogDto requestInfo = clientMapper.parseRequestInfo(request);
             linkAccessLogService.putRequestInfo(link.getId(), requestInfo);
 
             return ResponseEntity

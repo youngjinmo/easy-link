@@ -20,12 +20,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class LinkController {
     private final LinkService linkService;
+    private final ClientMapper clientMapper;
 
     @PostMapping("/free")
     public ResponseEntity<FreeLinkResponse> createFreeLink(
-            @Valid @RequestBody CreateLinkRequest requestDto,
-            HttpServletRequest httpRequest) {
-        String clientIp = ClientMapper.parseClientIp(httpRequest);
+            HttpServletRequest request,
+            @Valid @RequestBody CreateLinkRequest requestDto) {
+        String clientIp = clientMapper.parseClientIp(request);
         Link link = linkService.createFreeLink(requestDto.getOriginalUrl(), clientIp);
 
         return ResponseEntity

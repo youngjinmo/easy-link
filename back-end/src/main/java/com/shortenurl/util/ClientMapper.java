@@ -6,10 +6,11 @@ import com.shortenurl.stream.dto.AccessLinkLogDto;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Component;
 
-import lombok.extern.slf4j.Slf4j;
-import lombok.RequiredArgsConstructor;
 import ua_parser.Client;
 import ua_parser.Parser;
 
@@ -17,10 +18,10 @@ import ua_parser.Parser;
 @Component
 @RequiredArgsConstructor
 public class ClientMapper {
-    private static final Parser uaParser = new Parser();
-    private static final String UNKNOWN = "unknown";
+    private final Parser uaParser;
+    private final String UNKNOWN = "unknown";
 
-    public static AccessLinkLogDto parseRequestInfo(HttpServletRequest request) {
+    public AccessLinkLogDto parseRequestInfo(HttpServletRequest request) {
         String clientIp = parseClientIp(request);
         String referer = parseReferer(request);
         UserAgentDto userAgent = parseUserAgent(request);
@@ -28,7 +29,7 @@ public class ClientMapper {
         return AccessLinkLogDto.from(clientIp, referer, userAgent, geoInfo);
     }
 
-    public static String parseClientIp(HttpServletRequest request) {
+    public String parseClientIp(HttpServletRequest request) {
         String clientIp = request.getHeader("X-Forwarded-For");
         if (clientIp == null || clientIp.isEmpty()) {
             clientIp = request.getRemoteAddr();
@@ -51,21 +52,21 @@ public class ClientMapper {
         return clientIp;
     }
 
-    public static String parseClientDevice(HttpServletRequest request) {
+    public String parseClientDevice(HttpServletRequest request) {
         String userAgent = request.getHeader("User-Agent");
         Client client = uaParser.parse(userAgent);
         return client.device.family;
     }
 
-    private static String parseReferer(HttpServletRequest request) {
+    private String parseReferer(HttpServletRequest request) {
         String referer = request.getHeader("Referer");
         if (referer == null || referer.isEmpty()) {
             return UNKNOWN;
         }
-        return referer = referer.contains("://") ? referer : "http://" + referer;
+        return referer.contains("://") ? referer : "http://" + referer;
     }
 
-    private static UserAgentDto parseUserAgent(HttpServletRequest request) {
+    private UserAgentDto parseUserAgent(HttpServletRequest request) {
         String uaString = request.getHeader("User-Agent");
         try {
             Client client = uaParser.parse(uaString);
@@ -84,7 +85,7 @@ public class ClientMapper {
         }
     }
 
-    private static GeoInfoDto parseGeoInfo(String clientIp) {
+    private GeoInfoDto parseGeoInfo(String clientIp) {
         try {
             // TODO make it by use external library or api
             String countryCode = UNKNOWN;
