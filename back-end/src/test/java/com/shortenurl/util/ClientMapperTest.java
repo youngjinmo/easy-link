@@ -26,6 +26,19 @@ class ClientMapperTest {
     }
 
     @Test
+    void parseToken() {
+        // given
+        String mockToken = "test-token";
+        request.addHeader("Authorization", "Bearer "+mockToken);
+
+        // when
+        String token = clientMapper.parseToken(request);
+
+        // then
+        assertEquals(mockToken, token);
+    }
+
+    @Test
     void parseClientIp() {
         // given
         String mockIpAddress = " 127.0.0.1";

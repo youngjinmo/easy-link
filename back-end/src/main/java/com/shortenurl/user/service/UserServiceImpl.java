@@ -1,8 +1,9 @@
 package com.shortenurl.user.service;
 
-import com.shortenurl.cache.dto.SessionValue;
 import com.shortenurl.cache.service.CacheService;
 import com.shortenurl.exception.UserNotFoundException;
+import com.shortenurl.token.JwtClaimDto;
+import com.shortenurl.token.TokenService;
 import com.shortenurl.user.constant.UserProvider;
 import com.shortenurl.user.constant.UserState;
 import com.shortenurl.user.domain.User;
@@ -15,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Map;
 
 @Slf4j
@@ -41,16 +42,16 @@ public class UserServiceImpl implements UserService {
                 .orElseGet(() -> createKakaoUser(kakaoAccessToken, providerId));
 
         // 4. 세션 생성 및 토큰 발급
-        SessionValue session = SessionValue.builder()
+        JwtClaimDto tokenDto = JwtClaimDto.builder()
                 .userId(user.getId())
                 .clientIp(oAuthLoginDto.getClientIp())
                 .clientDevice(oAuthLoginDto.getClientDevice())
                 .build();
-        String accessToken = tokenService.createAccessToken(session);
-        cacheService.setLoginSession(session, accessToken);
+        String accessToken = tokenService.createToken(tokenDto);
+        cacheService.setLoginSession(tokenDto, accessToken);
 
         // 6. 마지막 로그인 시간 업데이트
-        user.setLastLoginAt(LocalDateTime.now());
+        user.setLastLoginAt(Instant.now());
 
         return accessToken;
     }
@@ -105,7 +106,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public void deleteUser(String accessToken) {
-        Long userId = tokenService.decodeAccessToken(accessToken);
+        Long userId = tokenService.parseToken(accessToken).getUserId();
         userRepository.deleteById(userId);
         log.info("User deleted = {}", userId);
     }

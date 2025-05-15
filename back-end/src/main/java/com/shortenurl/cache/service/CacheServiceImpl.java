@@ -1,7 +1,6 @@
 package com.shortenurl.cache.service;
 
-import com.shortenurl.cache.dto.SessionValue;
-import com.shortenurl.util.EncodeUtil;
+import com.shortenurl.token.JwtClaimDto;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,16 +15,15 @@ import static com.shortenurl.cache.constant.CacheConstant.*;
 @RequiredArgsConstructor
 public class CacheServiceImpl implements CacheService {
     private final RedisService baseCacheService;
-    private final EncodeUtil encoderUtil;
 
-    @Value("${app.session.duration}")
-    private int loginSessionTTL;
+    @Value("${app.ttl.session}")
+    private long loginSessionTTL;
 
-    @Value("${app.free-link.duration}")
-    private int freeLinkTTL;
+    @Value("${app.ttl.free-link}")
+    private long freeLinkTTL;
 
-    @Value("${app.email-verification.duration}")
-    private int emailVerificationTTL;
+    @Value("${app.ttl.email-verification}")
+    private long emailVerificationTTL;
 
     // 로그인 하지않고 생성가능한 free link
     public void setFreeLink(String clientIp, Long linkId) {
@@ -53,9 +51,9 @@ public class CacheServiceImpl implements CacheService {
     }
 
     // 인증 세션 추가
-    public void setLoginSession(SessionValue sessionValue, String token) {
+    public void setLoginSession(JwtClaimDto dto, String token) {
         String key = generateLoginSessionKey(token);
-        String value = String.valueOf(sessionValue.getUserId());
+        String value = String.valueOf(dto.getUserId());
         set(key, value, loginSessionTTL);
     }
 
@@ -83,6 +81,11 @@ public class CacheServiceImpl implements CacheService {
     // 로그인 세션 key
     private String generateLoginSessionKey(String token) {
         return LOGIN_SESSION_KEY_PREFIX + token;
+    }
+
+    // 서버(cache)에 존재하는 캐시인지 유효성
+    public boolean existToken(String token) {
+        return baseCacheService.exists(generateLoginSessionKey(token));
     }
 
     /**

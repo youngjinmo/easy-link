@@ -1,9 +1,7 @@
 package com.shortenurl.cache;
 
-import com.shortenurl.cache.dto.SessionValue;
 import com.shortenurl.cache.service.CacheService;
-import com.shortenurl.util.EncodeUtil;
-import com.shortenurl.util.EncoderUtilImpl;
+import com.shortenurl.token.JwtClaimDto;
 
 import java.util.Map;
 
@@ -11,12 +9,10 @@ import static com.shortenurl.cache.constant.CacheConstant.*;
 
 public class InMemoryCacheService implements CacheService {
     private final Map<String, String> cacheStore;
-    private final EncodeUtil encoderUtil;
     private final Long commonTTL;
 
     public InMemoryCacheService(Map<String, String> mockRedisTemplate) {
         cacheStore = mockRedisTemplate;
-        encoderUtil = new EncoderUtilImpl();
         commonTTL = 10L;
     }
 
@@ -57,15 +53,20 @@ public class InMemoryCacheService implements CacheService {
         return storedCode != null && storedCode.equals(code);
     }
 
-    public void setLoginSession(SessionValue sessionValue, String token) {
+    public void setLoginSession(JwtClaimDto dto, String token) {
         String key = generateLoginSessionKey(token);
-        String value = String.valueOf(sessionValue.getUserId());
+        String value = String.valueOf(dto.getUserId());
         set(key, value, commonTTL);
     }
 
     public boolean verifyLoginSession(String token) {
         String key = generateLoginSessionKey(token);
         return getByKey(key) != null;
+    }
+
+    @Override
+    public boolean existToken(String token) {
+        return getByKey(LOGIN_SESSION_KEY_PREFIX + token) != null;
     }
 
     public void removeLoginSession(String token) {

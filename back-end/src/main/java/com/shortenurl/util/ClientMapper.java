@@ -21,6 +21,14 @@ public class ClientMapper {
     private final Parser uaParser;
     private final String UNKNOWN = "unknown";
 
+    public String parseToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+
     public AccessLinkLogDto parseRequestInfo(HttpServletRequest request) {
         String clientIp = parseClientIp(request);
         String referer = parseReferer(request);

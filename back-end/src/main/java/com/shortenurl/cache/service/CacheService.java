@@ -1,6 +1,6 @@
 package com.shortenurl.cache.service;
 
-import com.shortenurl.cache.dto.SessionValue;
+import com.shortenurl.token.JwtClaimDto;
 
 public interface CacheService {
     // base cache service
@@ -14,7 +14,8 @@ public interface CacheService {
     boolean hasFreeLink(String clientIp);
     void setVerificationCode(String email, String code);
     boolean verifyEmailCode(String email, String code);
-    void setLoginSession(SessionValue sessionValue, String token);
+    void setLoginSession(JwtClaimDto dto, String token);
     boolean verifyLoginSession(String token);
+    boolean existToken(String token);
     void removeLoginSession(String token);
 }

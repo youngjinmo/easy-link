@@ -1,6 +1,6 @@
 package com.shortenurl.cache;
 
-import com.shortenurl.cache.dto.SessionValue;
+import com.shortenurl.token.JwtClaimDto;
 import com.shortenurl.cache.service.CacheService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -134,7 +134,7 @@ class CacheServiceTest {
     void setLoginSession() {
         // given
         Long userId = 1L;
-        SessionValue session = SessionValue.builder()
+        JwtClaimDto session = JwtClaimDto.builder()
                 .userId(userId)
                 .build();
         String token = "test-token";
@@ -176,5 +176,19 @@ class CacheServiceTest {
         // then
         assertNull(mockCacheStorage.get(cacheKey));
         assertFalse(cacheService.verifyLoginSession(token));
+    }
+
+    @Test
+    void existToken() {
+        // given
+        String token = "test-token";
+        String cacheKey = LOGIN_SESSION_KEY_PREFIX + token;
+        mockCacheStorage.put(cacheKey, "test-value");
+
+        // when
+        boolean result = cacheService.existToken(token);
+
+        // then
+        assertTrue(result);
     }
 }

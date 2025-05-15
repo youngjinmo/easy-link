@@ -3,6 +3,8 @@ package com.shortenurl.user.service;
 import com.shortenurl.cache.service.CacheService;
 import com.shortenurl.exception.InternalServerException;
 import com.shortenurl.exception.UserNotFoundException;
+import com.shortenurl.token.JwtClaimDto;
+import com.shortenurl.token.TokenService;
 import com.shortenurl.user.constant.UserState;
 import com.shortenurl.user.domain.User;
 import com.shortenurl.user.dto.OAuthLoginDto;
@@ -33,7 +35,12 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        userService = new UserServiceImpl(oAuth2UserService, cacheService, tokenService, userRepository);
+        userService = new UserServiceImpl(
+                oAuth2UserService,
+                cacheService,
+                tokenService,
+                userRepository
+        );
     }
 
     @Test
@@ -49,7 +56,7 @@ class UserServiceTest {
         given(oAuth2UserService.requestKakaoAccessToken(code)).willReturn(token);
         given(oAuth2UserService.getKakaoUserInfo(token)).willReturn(Map.of("id", providerId));
         given(userRepository.findByProviderAndProviderId(any(), anyString())).willReturn(Optional.of(user));
-        given(tokenService.createAccessToken(any())).willReturn("access-token");
+        given(tokenService.createToken(any())).willReturn("access-token");
         willDoNothing().given(cacheService).setLoginSession(any(), anyString());
 
         OAuthLoginDto dto = OAuthLoginDto.builder()
@@ -207,7 +214,11 @@ class UserServiceTest {
     void deleteUser() {
         // given
         String accessToken = "access-token";
-        given(tokenService.decodeAccessToken(anyString())).willReturn(1L);
+        given(tokenService.parseToken(anyString())).willReturn(JwtClaimDto.builder()
+                        .userId(1L)
+                        .clientIp("127.0.0.1")
+                        .clientDevice("iPhone")
+                .build());
         willDoNothing().given(userRepository).deleteById(1L);
 
         // when
