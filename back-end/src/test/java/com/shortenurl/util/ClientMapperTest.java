@@ -7,20 +7,22 @@ import com.shortenurl.stream.dto.AccessLinkLogDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.mockito.Mock;
-
 import org.springframework.mock.web.MockHttpServletRequest;
+
+import ua_parser.Parser;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ClientMapperTest {
 
-    @Mock
     private MockHttpServletRequest request;
+    private ClientMapper clientMapper;
 
     @BeforeEach
     void setUp() {
+        Parser uaParser = new Parser();
         request = new MockHttpServletRequest();
+        clientMapper = new ClientMapper(uaParser);
     }
 
     @Test
@@ -30,7 +32,7 @@ class ClientMapperTest {
         request.addHeader("X-Forwarded-For", mockIpAddress);
 
         // when
-        String parsedIpAddress = ClientMapper.parseClientIp(request);
+        String parsedIpAddress = clientMapper.parseClientIp(request);
 
         // then
         assertEquals(mockIpAddress, parsedIpAddress);
@@ -55,7 +57,7 @@ class ClientMapperTest {
         );
 
         // when
-        AccessLinkLogDto requestDto = ClientMapper.parseRequestInfo(request);
+        AccessLinkLogDto requestDto = clientMapper.parseRequestInfo(request);
 
         // then
         assertEquals(expectedDto.getClientIp(), requestDto.getClientIp());

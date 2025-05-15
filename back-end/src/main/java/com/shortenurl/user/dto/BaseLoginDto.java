@@ -1,14 +1,10 @@
 package com.shortenurl.user.dto;
 
 import lombok.Getter;
+import lombok.Setter;
 
-@Getter
+@Getter @Setter
 public class BaseLoginDto {
-    private final String clientIp;
-    private final String clientDevice;
-
-    protected BaseLoginDto(String clientIp, String clientDevice) {
-        this.clientIp = clientIp;
-        this.clientDevice = clientDevice;
-    }
+    private String clientIp;
+    private String clientDevice;
 }

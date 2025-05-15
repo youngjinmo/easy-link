@@ -1,6 +1,8 @@
 package com.shortenurl.user.controller;
 
+import com.shortenurl.user.dto.OAuthLoginDto;
 import com.shortenurl.user.service.UserService;
+import com.shortenurl.util.ClientMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -14,10 +16,18 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final ClientMapper clientMapper;
 
     @GetMapping("/oauth/kakao/callback")
     public ResponseEntity<?> kakaoOauth2Login(@RequestParam String code, HttpServletRequest request) {
-        String accessToken = userService.handleKakaoLogin(request, code);
+        String clientIp = clientMapper.parseClientIp(request);
+        String clientDevice = clientMapper.parseClientDevice(request);
+        OAuthLoginDto oAuthLoginDto = OAuthLoginDto.builder()
+                .clientIp(clientIp)
+                .clientDevice(clientDevice)
+                .code(code)
+                .build();
+        String accessToken = userService.handleKakaoLogin(oAuthLoginDto);
         return ResponseEntity.ok().body(accessToken);
     }
 

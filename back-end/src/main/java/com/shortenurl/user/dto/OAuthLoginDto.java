@@ -4,10 +4,28 @@ import lombok.Getter;
 
 @Getter
 public class OAuthLoginDto extends BaseLoginDto {
-    private final String code;
+    private String code;
 
-    public OAuthLoginDto(String code, String clientIp, String clientDevice) {
-        super(clientIp, clientDevice);
+    public static OAuthLoginDto builder() {
+        return new OAuthLoginDto();
+    }
+
+    public OAuthLoginDto code(String code) {
         this.code = code;
+        return this;
+    }
+
+    public OAuthLoginDto clientIp(String clientIp) {
+        super.setClientIp(clientIp);
+        return this;
+    }
+
+    public OAuthLoginDto clientDevice(String clientDevice) {
+        super.setClientDevice(clientDevice);
+        return this;
+    }
+
+    public OAuthLoginDto build() {
+        return this;
     }
 }

@@ -3,15 +3,12 @@ package com.shortenurl.user.service;
 import com.shortenurl.cache.dto.SessionValue;
 import com.shortenurl.cache.service.CacheService;
 import com.shortenurl.exception.UserNotFoundException;
-import com.shortenurl.link.service.LinkService;
 import com.shortenurl.user.constant.UserProvider;
 import com.shortenurl.user.constant.UserState;
 import com.shortenurl.user.domain.User;
 import com.shortenurl.user.dto.OAuthLoginDto;
 import com.shortenurl.user.repository.UserRepository;
-import com.shortenurl.util.ClientMapper;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,12 +28,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Transactional
-    public String handleKakaoLogin(HttpServletRequest request, String code) {
-        // 1. 클라이언트 정보 파싱
-        String clientIp = ClientMapper.parseClientIp(request);
-        String clientDevice = ClientMapper.parseClientDevice(request);
-        OAuthLoginDto oAuthLoginDto = new OAuthLoginDto(code, clientIp, clientDevice);
-
+    public String handleKakaoLogin(OAuthLoginDto oAuthLoginDto) {
         // 1. 인가 코드로 액세스 토큰 요청
         String kakaoAccessToken = oAuth2UserService.requestKakaoAccessToken(oAuthLoginDto.getCode());
 
@@ -63,6 +55,13 @@ public class UserServiceImpl implements UserService {
         return accessToken;
     }
 
+    @Transactional
+    public User createKakaoUser(String kakaoToken, String providerId) {
+        User user = oAuth2UserService.createKakaoUser(kakaoToken, providerId);
+        log.info("OAuth user created: {}, {}", user.getId(), user.getUsername());
+        return userRepository.save(user);
+    }
+
     public void logout(String accessToken) {
         try {
             cacheService.removeLoginSession(accessToken);
@@ -78,13 +77,6 @@ public class UserServiceImpl implements UserService {
 
     public User findByUsername(String username) {
         return userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
-    }
-
-    @Transactional
-    public User createKakaoUser(String kakaoToken, String providerId) {
-        User user = oAuth2UserService.createKakaoUser(kakaoToken, providerId);
-        log.info("OAuth user created: {}, {}", user.getId(), user.getUsername());
-        return userRepository.save(user);
     }
 
     @Transactional
@@ -114,10 +106,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteUser(String accessToken) {
         Long userId = tokenService.decodeAccessToken(accessToken);
-        User user = findById(userId);
-        // TODO hard delete link log
-        // TODO soft delete link and make user into null - why soft delete? cuz error handling
-        userRepository.delete(user);
-        log.info("User deleted = {}", user.getId());
+        userRepository.deleteById(userId);
+        log.info("User deleted = {}", userId);
     }
 }
