@@ -23,7 +23,7 @@ public class RedisService {
     }
 
     public boolean exists(String key) {
-        return redisTemplate.persist(key);
+        return redisTemplate.hasKey(key);
     }
 
     public boolean hasExpired(String key) {

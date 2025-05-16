@@ -21,6 +21,8 @@ import java.util.Date;
 @Service
 @RequiredArgsConstructor
 public class JwtService {
+    // 현재 구조는 secretKey가 Tomcat 메모리에 저장되고 있어, 재부팅시 서버에서 발행한 모든 토큰이 무력화되는 버그 있음.
+    // TODO 토큰 발급 시점에 secretKey를 salt로 db에 저장할 필요 있음.
     private final SecretKey secretKey = Jwts.SIG.HS256.key().build();
 
     public String generateToken(JwtClaimDto dto, long expirationTime) {
