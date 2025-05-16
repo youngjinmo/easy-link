@@ -29,7 +29,7 @@ public class LinkServiceImpl implements LinkService {
     private final CacheService cacheService;
     private final RandomUtil randomUtilImpl;
 
-    @Value("${app.free-link.duration}")
+    @Value("${app.ttl.free-link}")
     private int freeLinkExpires;
 
     @Transactional(readOnly = true)
