@@ -2,11 +2,27 @@
 
 URL 단축 서비스 프로젝트입니다. 긴 URL을 짧은 URL로 변환하여 제공하는 서비스입니다.
 
+<img src="./imgs/home_vue.png" style="width:50%">
+
 ## 주요 기능
 
 - URL 단축 서비스 (비로그인/로그인 사용자)
-- 소셜 로그인 (카카오/구글)
+- OAuth2 로그인, JWT 토큰 인증
 - URL 접속 통계 수집
+
+
+
+
+
+**JJWT 토큰, Redis에서 관리**
+<img src="./imgs/jjwt.png">
+
+
+
+**접속 로그 저장(AS-IS MySQL, TO-DO MongoDB)**
+<img src="./imgs/redis_stream_log.png" style="width: 100%">
+
+
 
 ## 기술 스택
 
